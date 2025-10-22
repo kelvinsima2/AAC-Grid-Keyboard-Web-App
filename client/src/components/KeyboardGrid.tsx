@@ -42,11 +42,11 @@ export default function KeyboardGrid({
   ];
   
   return (
-    <div className="space-y-2" role="grid" aria-label="QWERTY keyboard grid">
+    <div className="space-y-3 md:space-y-4" role="grid" aria-label="QWERTY keyboard grid">
       {rows.map((row, rowIndex) => (
         <div 
           key={rowIndex}
-          className="flex justify-center gap-2 md:gap-3"
+          className="flex justify-center gap-3 md:gap-4"
         >
           {row.map((key) => (
             <Card
@@ -55,7 +55,7 @@ export default function KeyboardGrid({
                 flex flex-col items-center justify-center
                 transition-all duration-200 cursor-pointer
                 hover-elevate active-elevate-2
-                ${key.label === 'SPACE' ? 'min-w-32 md:min-w-40 h-16 md:h-20' : 'w-12 h-16 md:w-16 md:h-20'}
+                ${key.label === 'SPACE' ? 'min-w-48 md:min-w-64 h-20 md:h-28' : 'w-16 h-20 md:w-24 md:h-28'}
                 ${getKeyVariant(key)}
               `}
               onClick={() => onKeySelect?.(key)}
@@ -63,10 +63,10 @@ export default function KeyboardGrid({
               role="gridcell"
               tabIndex={0}
             >
-              <span className="text-lg md:text-xl font-semibold">
+              <span className="text-xl md:text-2xl font-semibold">
                 {key.label}
               </span>
-              <span className="text-xs text-muted-foreground font-mono mt-1">
+              <span className="text-sm md:text-base text-muted-foreground font-mono mt-1">
                 {key.code}
               </span>
             </Card>
