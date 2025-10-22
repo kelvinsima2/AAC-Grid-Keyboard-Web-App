@@ -79,20 +79,63 @@ export default function AAC() {
   // Handle keyboard input
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Handle number keys for Huffman navigation
       if (['1', '2', '3', '4'].includes(e.key)) {
         e.preventDefault();
         const availableNumbers = getNextOptions(currentPath);
         if (availableNumbers.includes(e.key)) {
           handleNumberPress(e.key);
         }
-      } else if (e.key === 'Escape') {
+        return;
+      }
+      
+      // Handle Escape to reset path
+      if (e.key === 'Escape') {
         setCurrentPath("");
+        return;
+      }
+      
+      // Handle direct letter input (a-z)
+      if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+        const char = e.key.toLowerCase();
+        setText(prev => prev + char);
+        speakCharacter(char);
+        setCurrentPath(""); // Reset path when direct typing
+        return;
+      }
+      
+      // Handle space
+      if (e.key === ' ') {
+        e.preventDefault();
+        setText(prev => prev + ' ');
+        speakCharacter(' ');
+        setCurrentPath("");
+        return;
+      }
+      
+      // Handle backspace
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        setText(prev => prev.slice(0, -1));
+        speakCharacter('BACKSPACE');
+        setCurrentPath("");
+        return;
+      }
+      
+      // Handle common punctuation
+      if (['.', ',', '!', '?'].includes(e.key)) {
+        e.preventDefault();
+        setText(prev => prev + e.key);
+        speakCharacter(e.key);
+        setCurrentPath("");
+        return;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentPath, handleNumberPress]);
+  }, [currentPath, handleNumberPress, speakCharacter]);
 
   // Text-to-speech for full text
   const handlePlay = () => {
@@ -139,10 +182,10 @@ export default function AAC() {
           {/* Instructions */}
           <div className="text-center space-y-2">
             <p className="text-lg text-muted-foreground">
-              Press numbers 1-4 on your keyboard to navigate and select letters
+              Type directly with your keyboard or use numbers 1-4 to navigate via codes
             </p>
             <p className="text-sm text-muted-foreground">
-              Each letter has a unique code shown below it. Control buttons also have codes.
+              Each letter has a unique number code. You can use either method at any time.
             </p>
           </div>
 
