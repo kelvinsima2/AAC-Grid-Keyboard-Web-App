@@ -55,7 +55,7 @@ export const KEYBOARD_TREE: KeyNode[] = [
 // Action codes for control buttons
 export const ACTION_CODES = {
   PLAY: '31',
-  CLEAR: '32',
+  CLEAR: '321',
   SETTINGS: '33',
 };
 
