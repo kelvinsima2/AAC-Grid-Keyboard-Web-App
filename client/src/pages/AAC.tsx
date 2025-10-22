@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import TextDisplay from "@/components/TextDisplay";
+import NumberInput from "@/components/NumberInput";
 import KeyboardGrid from "@/components/KeyboardGrid";
 import ControlBar from "@/components/ControlBar";
 import PathIndicator from "@/components/PathIndicator";
@@ -168,6 +169,7 @@ export default function AAC() {
     }
   }, []);
 
+  const availableNumbers = getNextOptions(currentPath);
   const highlightedKeys = getAvailableKeys(currentPath);
   const highlightPlay = currentPath === ACTION_CODES.PLAY.slice(0, currentPath.length) && currentPath.length > 0;
   const highlightClear = currentPath === ACTION_CODES.CLEAR.slice(0, currentPath.length) && currentPath.length > 0;
@@ -194,6 +196,13 @@ export default function AAC() {
 
           {/* Current Path Indicator */}
           <PathIndicator currentPath={currentPath} />
+
+          {/* Number Input Row */}
+          <NumberInput 
+            onNumberPress={handleNumberPress}
+            currentPath={currentPath}
+            availableNumbers={availableNumbers}
+          />
 
           {/* Control Buttons */}
           <ControlBar 

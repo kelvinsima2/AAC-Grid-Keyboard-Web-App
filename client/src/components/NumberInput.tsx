@@ -17,20 +17,20 @@ export default function NumberInput({
     <div className="flex justify-center gap-3 md:gap-4">
       {numbers.map((num) => {
         const isAvailable = availableNumbers.includes(num);
-        const isActive = currentPath.endsWith(num);
+        const isInPath = currentPath.includes(num);
         
         return (
           <Button
             key={num}
             size="lg"
-            variant={isActive ? "default" : "outline"}
-            className={`h-16 w-16 md:h-20 md:w-20 text-2xl md:text-3xl font-bold ${
+            variant={isInPath ? "default" : "outline"}
+            className={`h-16 w-16 md:h-20 md:w-20 text-2xl md:text-3xl font-bold transition-all ${
               !isAvailable ? 'opacity-40 cursor-not-allowed' : ''
-            }`}
+            } ${isInPath ? 'scale-105' : ''}`}
             onClick={() => isAvailable && onNumberPress(num)}
             disabled={!isAvailable}
             data-testid={`button-number-${num}`}
-            aria-label={`Number ${num}`}
+            aria-label={`Number ${num}${isAvailable ? ' - available' : ' - not available'}`}
           >
             {num}
           </Button>
