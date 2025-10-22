@@ -6,4 +6,4 @@
 5. Type 'localhost:3000' (or your specified port number) on a web browser and you will have the AAC keyboard open.
 - Made using Replit
 
-![AAC Keyboard Grid][images/AAC_grid.png]
+![AAC Keyboard Grid](images/AAC_grid.png)
