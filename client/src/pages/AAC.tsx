@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import TextDisplay from "@/components/TextDisplay";
-import NumberInput from "@/components/NumberInput";
 import KeyboardGrid from "@/components/KeyboardGrid";
 import ControlBar from "@/components/ControlBar";
 import PathIndicator from "@/components/PathIndicator";
@@ -196,13 +195,6 @@ export default function AAC() {
 
           {/* Current Path Indicator */}
           <PathIndicator currentPath={currentPath} />
-
-          {/* Number Input Row */}
-          <NumberInput 
-            onNumberPress={handleNumberPress}
-            currentPath={currentPath}
-            availableNumbers={availableNumbers}
-          />
 
           {/* Control Buttons */}
           <ControlBar 
