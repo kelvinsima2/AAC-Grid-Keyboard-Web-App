@@ -106,7 +106,7 @@ export default function AAC() {
       }
       
       // Handle space
-      if (e.key === ' ') {
+      if (e.key === ' ' || e.key === 'Space') {
         e.preventDefault();
         setText(prev => prev + ' ');
         speakCharacter(' ');
@@ -169,6 +169,17 @@ export default function AAC() {
   }, []);
 
   const availableNumbers = getNextOptions(currentPath);
+  const handleKeyClick = useCallback((key: any) => {
+    if (key.char === 'BACKSPACE') {
+      setText(prev => prev.slice(0, -1));
+      speakCharacter('BACKSPACE');
+    } else {
+      setText(prev => prev + key.char);
+      speakCharacter(key.char);
+    }
+    setCurrentPath("");
+  }, [speakCharacter]);
+
   const highlightedKeys = getAvailableKeys(currentPath);
   const highlightPlay = currentPath === ACTION_CODES.PLAY.slice(0, currentPath.length) && currentPath.length > 0;
   const highlightClear = currentPath === ACTION_CODES.CLEAR.slice(0, currentPath.length) && currentPath.length > 0;
@@ -212,6 +223,7 @@ export default function AAC() {
           <KeyboardGrid 
             currentPath={currentPath}
             highlightedKeys={highlightedKeys}
+            onKeySelect={handleKeyClick}
           />
         </div>
       </main>
