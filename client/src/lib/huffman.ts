@@ -52,6 +52,13 @@ export const KEYBOARD_TREE: KeyNode[] = [
   { char: '?', code: '244', label: '?', row: 3, col: 7 },
 ];
 
+// Action codes for control buttons
+export const ACTION_CODES = {
+  PLAY: '31',
+  CLEAR: '32',
+  SETTINGS: '33',
+};
+
 export function getKeyByCode(code: string): KeyNode | undefined {
   return KEYBOARD_TREE.find(node => node.code === code);
 }
@@ -70,6 +77,10 @@ export function isCompleteCode(code: string): boolean {
   return KEYBOARD_TREE.some(node => node.code === code);
 }
 
+export function isActionCode(code: string): boolean {
+  return Object.values(ACTION_CODES).includes(code);
+}
+
 export function getNextOptions(currentPath: string): string[] {
   const nextChars = new Set<string>();
   const availableKeys = getAvailableKeys(currentPath);
@@ -77,6 +88,13 @@ export function getNextOptions(currentPath: string): string[] {
   availableKeys.forEach(key => {
     if (key.code.length > currentPath.length) {
       nextChars.add(key.code[currentPath.length]);
+    }
+  });
+  
+  // Also add action codes
+  Object.values(ACTION_CODES).forEach(actionCode => {
+    if (actionCode.startsWith(currentPath) && actionCode.length > currentPath.length) {
+      nextChars.add(actionCode[currentPath.length]);
     }
   });
   

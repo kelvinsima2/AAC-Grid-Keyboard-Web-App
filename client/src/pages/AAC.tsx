@@ -4,28 +4,33 @@ import TextDisplay from "@/components/TextDisplay";
 import KeyboardGrid from "@/components/KeyboardGrid";
 import ControlBar from "@/components/ControlBar";
 import PathIndicator from "@/components/PathIndicator";
+import SettingsDialog from "@/components/SettingsDialog";
 import { 
   getKeyByCode, 
   getAvailableKeys, 
-  isCompleteCode, 
-  getNextOptions 
+  isCompleteCode,
+  isActionCode,
+  getNextOptions,
+  ACTION_CODES
 } from "@/lib/huffman";
 
 export default function AAC() {
   const [text, setText] = useState("");
   const [currentPath, setCurrentPath] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pathTimeout, setPathTimeout] = useState(3000); // Default 3 seconds
 
-  // Auto-reset path after 3 seconds of inactivity
+  // Auto-reset path after timeout
   useEffect(() => {
     if (currentPath === "") return;
     
     const timeout = setTimeout(() => {
       setCurrentPath("");
-    }, 3000);
+    }, pathTimeout);
     
     return () => clearTimeout(timeout);
-  }, [currentPath]);
+  }, [currentPath, pathTimeout]);
 
   // Speech feedback for a single character
   const speakCharacter = useCallback((char: string) => {
@@ -39,6 +44,19 @@ export default function AAC() {
   // Handle number press
   const handleNumberPress = useCallback((num: string) => {
     const newPath = currentPath + num;
+    
+    // Check if this is an action code
+    if (isActionCode(newPath)) {
+      if (newPath === ACTION_CODES.PLAY) {
+        handlePlay();
+      } else if (newPath === ACTION_CODES.CLEAR) {
+        handleClear();
+      } else if (newPath === ACTION_CODES.SETTINGS) {
+        setSettingsOpen(true);
+      }
+      setCurrentPath("");
+      return;
+    }
     
     // Check if this completes a key
     if (isCompleteCode(newPath)) {
@@ -94,7 +112,23 @@ export default function AAC() {
     setIsPlaying(false);
   };
 
+  const handleTimeoutChange = (newTimeout: number) => {
+    setPathTimeout(newTimeout);
+    localStorage.setItem('aac-path-timeout', newTimeout.toString());
+  };
+
+  // Load saved timeout on mount
+  useEffect(() => {
+    const savedTimeout = localStorage.getItem('aac-path-timeout');
+    if (savedTimeout) {
+      setPathTimeout(parseInt(savedTimeout, 10));
+    }
+  }, []);
+
   const highlightedKeys = getAvailableKeys(currentPath);
+  const highlightPlay = currentPath === ACTION_CODES.PLAY.slice(0, currentPath.length) && currentPath.length > 0;
+  const highlightClear = currentPath === ACTION_CODES.CLEAR.slice(0, currentPath.length) && currentPath.length > 0;
+  const highlightSettings = currentPath === ACTION_CODES.SETTINGS.slice(0, currentPath.length) && currentPath.length > 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -108,7 +142,7 @@ export default function AAC() {
               Press numbers 1-4 on your keyboard to navigate and select letters
             </p>
             <p className="text-sm text-muted-foreground">
-              Each letter has a unique code shown below it. Watch the highlighted keys as you type.
+              Each letter has a unique code shown below it. Control buttons also have codes.
             </p>
           </div>
 
@@ -122,8 +156,12 @@ export default function AAC() {
           <ControlBar 
             onPlay={handlePlay}
             onClear={handleClear}
+            onSettings={() => setSettingsOpen(true)}
             isPlaying={isPlaying}
             hasText={text.length > 0}
+            highlightPlay={highlightPlay}
+            highlightClear={highlightClear}
+            highlightSettings={highlightSettings}
           />
 
           {/* Keyboard Grid */}
@@ -133,6 +171,14 @@ export default function AAC() {
           />
         </div>
       </main>
+
+      {/* Settings Dialog */}
+      <SettingsDialog 
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        timeout={pathTimeout}
+        onTimeoutChange={handleTimeoutChange}
+      />
     </div>
   );
 }
