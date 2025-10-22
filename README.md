@@ -5,3 +5,5 @@
 4. run 'npm run dev' on the terminal (as described in .replit file)
 5. Type 'localhost:3000' (or your specified port number) on a web browser and you will have the AAC keyboard open.
 - Made using Replit
+
+![AAC Keyboard Grid][images/AAC_grid.png]
