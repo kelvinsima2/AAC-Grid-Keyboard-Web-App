@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/Header";
 import TextDisplay from "@/components/TextDisplay";
-import NumberInput from "@/components/NumberInput";
 import KeyboardGrid from "@/components/KeyboardGrid";
 import ControlBar from "@/components/ControlBar";
 import PathIndicator from "@/components/PathIndicator";
@@ -28,6 +27,15 @@ export default function AAC() {
     return () => clearTimeout(timeout);
   }, [currentPath]);
 
+  // Speech feedback for a single character
+  const speakCharacter = useCallback((char: string) => {
+    const charToSpeak = char === ' ' ? 'space' : char === 'BACKSPACE' ? 'backspace' : char;
+    const utterance = new SpeechSynthesisUtterance(charToSpeak);
+    utterance.rate = 1.2;
+    utterance.volume = 0.8;
+    speechSynthesis.speak(utterance);
+  }, []);
+
   // Handle number press
   const handleNumberPress = useCallback((num: string) => {
     const newPath = currentPath + num;
@@ -38,15 +46,17 @@ export default function AAC() {
       if (key) {
         if (key.char === 'BACKSPACE') {
           setText(prev => prev.slice(0, -1));
+          speakCharacter('BACKSPACE');
         } else {
           setText(prev => prev + key.char);
+          speakCharacter(key.char);
         }
       }
       setCurrentPath("");
     } else {
       setCurrentPath(newPath);
     }
-  }, [currentPath]);
+  }, [currentPath, speakCharacter]);
 
   // Handle keyboard input
   useEffect(() => {
@@ -66,7 +76,7 @@ export default function AAC() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentPath, handleNumberPress]);
 
-  // Text-to-speech
+  // Text-to-speech for full text
   const handlePlay = () => {
     if (!text || isPlaying) return;
     
@@ -84,7 +94,6 @@ export default function AAC() {
     setIsPlaying(false);
   };
 
-  const availableNumbers = getNextOptions(currentPath);
   const highlightedKeys = getAvailableKeys(currentPath);
 
   return (
@@ -96,10 +105,10 @@ export default function AAC() {
           {/* Instructions */}
           <div className="text-center space-y-2">
             <p className="text-lg text-muted-foreground">
-              Press numbers 1-4 to navigate the keyboard tree
+              Press numbers 1-4 on your keyboard to navigate and select letters
             </p>
             <p className="text-sm text-muted-foreground">
-              Each letter has a unique code. Watch the highlighted keys to find your letter.
+              Each letter has a unique code shown below it. Watch the highlighted keys as you type.
             </p>
           </div>
 
@@ -108,13 +117,6 @@ export default function AAC() {
 
           {/* Current Path Indicator */}
           <PathIndicator currentPath={currentPath} />
-
-          {/* Number Input */}
-          <NumberInput 
-            onNumberPress={handleNumberPress}
-            currentPath={currentPath}
-            availableNumbers={availableNumbers}
-          />
 
           {/* Control Buttons */}
           <ControlBar 

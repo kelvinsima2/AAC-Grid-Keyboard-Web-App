@@ -33,33 +33,45 @@ export default function KeyboardGrid({
     return 'bg-card border-card-border';
   };
   
+  // Organize keys by row
+  const rows = [
+    KEYBOARD_TREE.filter(k => k.row === 0),
+    KEYBOARD_TREE.filter(k => k.row === 1),
+    KEYBOARD_TREE.filter(k => k.row === 2),
+    KEYBOARD_TREE.filter(k => k.row === 3),
+  ];
+  
   return (
-    <div 
-      className="grid grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-3"
-      role="grid"
-      aria-label="Keyboard grid"
-    >
-      {KEYBOARD_TREE.map((key) => (
-        <Card
-          key={key.code}
-          className={`
-            aspect-square flex flex-col items-center justify-center
-            transition-all duration-200 cursor-pointer
-            hover-elevate active-elevate-2
-            ${getKeyVariant(key)}
-          `}
-          onClick={() => onKeySelect?.(key)}
-          data-testid={`key-${key.char}`}
-          role="gridcell"
-          tabIndex={0}
+    <div className="space-y-2" role="grid" aria-label="QWERTY keyboard grid">
+      {rows.map((row, rowIndex) => (
+        <div 
+          key={rowIndex}
+          className="flex justify-center gap-2 md:gap-3"
         >
-          <span className="text-lg md:text-xl font-semibold">
-            {key.label}
-          </span>
-          <span className="text-xs md:text-sm text-muted-foreground font-mono mt-1">
-            {key.code}
-          </span>
-        </Card>
+          {row.map((key) => (
+            <Card
+              key={key.code}
+              className={`
+                flex flex-col items-center justify-center
+                transition-all duration-200 cursor-pointer
+                hover-elevate active-elevate-2
+                ${key.label === 'SPACE' ? 'min-w-32 md:min-w-40 h-16 md:h-20' : 'w-12 h-16 md:w-16 md:h-20'}
+                ${getKeyVariant(key)}
+              `}
+              onClick={() => onKeySelect?.(key)}
+              data-testid={`key-${key.char}`}
+              role="gridcell"
+              tabIndex={0}
+            >
+              <span className="text-lg md:text-xl font-semibold">
+                {key.label}
+              </span>
+              <span className="text-xs text-muted-foreground font-mono mt-1">
+                {key.code}
+              </span>
+            </Card>
+          ))}
+        </div>
       ))}
     </div>
   );
